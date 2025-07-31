@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedra, Papel e Tesoura - Batalha Épica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #ff6b6b;
+            --accent-color: #4ecdc4;
+            --dark-color: #2b2d42;
+            --light-color: #f8f9fa;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+        }
+        
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #counters-bar {
+            background-color: var(--dark-color);
+            padding: 12px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+        }
+        
+        #game-area {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: #f0f0f0;
+            background-image: radial-gradient(circle at 50% 50%, #e0e0e0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .counter {
+            min-width: 200px;
+            padding: 12px 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            margin: 0 15px;
+            text-align: center;
+            box-sizing: border-box;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid;
+        }
+        
+        .counter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        #rock-count {
+            border-left-color: var(--secondary-color);
+            color: var(--secondary-color);
+        }
+        
+        #paper-count {
+            border-left-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        #scissors-count {
+            border-left-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+        
+        .item {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            user-select: none;
+            transition: transform 0.2s;
+            z-index: 1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .item:hover {
+            transform: scale(1.15);
+        }
+        
+        .rock {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .paper {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .scissors {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        #winner-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .winner-content {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transform: scale(0);
+            animation: winnerScaleIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        @keyframes winnerScaleIn {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .winner-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .winner-name {
+            font-size: 72px;
+            font-weight: 700;
+            margin: 20px 0;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .winner-subtitle {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        #restart-btn {
+            margin-top: 25px;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(74, 111, 165, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        #restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(74, 111, 165, 0.4);
+        }
+        
+        #restart-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        #restart-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), #3bb4ad);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        #restart-btn:hover::before {
+            opacity: 1;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: #f00;
+            opacity: 0;
+            z-index: 999;
+        }
+        
+        .winner-decoration {
+            position: absolute;
+            font-size: 120px;
+            opacity: 0.1;
+            z-index: -1;
+        }
+        
+        .decoration-1 {
+            top: 20px;
+            left: 30px;
+            color: var(--secondary-color);
+        }
+        
+        .decoration-2 {
+            bottom: 20px;
+            right: 30px;
+            color: var(--primary-color);
+        }
+        
+        .winner-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-30px);}
+            60% {transform: translateY(-15px);}
+        }
+        
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 5px;
+            animation: firework 1s ease-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes firework {
+            0% { transform: translate(0, 0); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)); opacity: 0; }
+        }
+        
+        .trophy {
+            position: absolute;
+            font-size: 100px;
+            color: gold;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            animation: rotateTrophy 3s linear infinite;
+            opacity: 0;
+            z-index: 999;
+        }
+        
+        @keyframes rotateTrophy {
+            0% { transform: rotateY(0deg); opacity: 1; }
+            50% { transform: rotateY(180deg); opacity: 1; }
+            100% { transform: rotateY(360deg); opacity: 1; }
+        }
+        
+        .winner-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            z-index: -1;
+            opacity: 0;
+        }
+        
+        #config-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(43, 45, 66, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .config-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            max-width: 90%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .config-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
+        }
+
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark-color);
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-message {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .config-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .config-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 14px;
+        }
+
+        .config-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        .config-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+
+        #start-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 15px;
+            cursor: pointer;
+            border-radius: 8px;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(74, 111, 165, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(74, 111, 165, 0.4);
+            background: linear-gradient(135deg, var(--primary-color), #3bb4ad);
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .input-with-icon input {
+            padding-left: 40px;
+        }
+
+        .emoji-icon {
+            font-size: 20px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        .game-logo {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: inline-block;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .version {
+            font-size: 12px;
+            color: #999;
+            margin-top: 20px;
+            display: block;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div id="config-panel" style="display: flex;">
+        <div class="config-container">
+            <div class="game-logo">PEDRA, PAPEL & TESOURA</div>
+            <div class="welcome-title">Bem-vindo à Batalha Épica!</div>
+            <div class="welcome-message">
+                Configure os parâmetros abaixo para iniciar uma batalha épica entre pedras, papéis e tesouras. 
+                Quando dois elementos colidem, o mais forte converte o mais fraco. Quem dominará o território?
+            </div>
+            
+            <div class="config-group">
+                <label for="rock-qty"><i class="fas fa-hand-rock emoji-icon"></i> Quantidade de Pedras</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-mountain"></i>
+                    <input type="number" id="rock-qty" value="50" min="1" placeholder="Quantidade de pedras">
+                </div>
+            </div>
+            
+            <div class="config-group">
+                <label for="paper-qty"><i class="fas fa-hand-paper emoji-icon"></i> Quantidade de Papéis</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-scroll"></i>
+                    <input type="number" id="paper-qty" value="50" min="1" placeholder="Quantidade de papéis">
+                </div>
+            </div>
+            
+            <div class="config-group">
+                <label for="scissors-qty"><i class="fas fa-hand-scissors emoji-icon"></i> Quantidade de Tesouras</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-cut"></i>
+                    <input type="number" id="scissors-qty" value="50" min="1" placeholder="Quantidade de tesouras">
+                </div>
+            </div>
+            
+            <div class="config-group">
+                <label for="game-speed"><i class="fas fa-tachometer-alt emoji-icon"></i> Velocidade dos Itens</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-bolt"></i>
+                    <input type="number" id="game-speed" value="1.5" min="0.1" step="0.1" placeholder="Velocidade (1-5)">
+                </div>
+            </div>
+            
+            <button id="start-btn">
+                <i class="fas fa-play"></i> Iniciar Batalha
+            </button>
+            
+            <span class="version">Versão 2.1 • Batalha Épica</span>
+			<!--<span class="Eric Nascimento - Edm3 Soluções">, 20, love.graphics.getHeight() - 15) </span>-->
+			<span class="version" style="margin-top: 5px;">Eric Nascimento - Edm3 Soluções</span>
+			
+        </div>
+    </div>
+    
+    <div id="game-container">
+        <div id="counters-bar">
+            <div id="rock-count" class="counter"><i class="fas fa-hand-rock"></i> Pedra: 50</div>
+            <div id="paper-count" class="counter"><i class="fas fa-hand-paper"></i> Papel: 50</div>
+            <div id="scissors-count" class="counter"><i class="fas fa-hand-scissors"></i> Tesoura: 50</div>
+        </div>
+        
+        <div id="game-area">
+            <div id="winner-display">
+                <div class="winner-content">
+                    <div class="winner-title">O Grande Vencedor é</div>
+                    <div class="winner-icon" id="winner-icon"></div>
+                    <div class="winner-name" id="winner-name"></div>
+                    <div class="winner-subtitle">dominou completamente o campo de batalha!</div>
+                    <button id="restart-btn"><i class="fas fa-redo"></i> Jogar Novamente</button>
+                    <div class="winner-decoration decoration-1">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="winner-decoration decoration-2">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="winner-glow"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const configPanel = document.getElementById('config-panel');
+            const startBtn = document.getElementById('start-btn');
+            const gameArea = document.getElementById('game-area');
+            const rockCountElement = document.getElementById('rock-count');
+            const paperCountElement = document.getElementById('paper-count');
+            const scissorsCountElement = document.getElementById('scissors-count');
+            const winnerDisplay = document.getElementById('winner-display');
+            const winnerName = document.getElementById('winner-name');
+            const winnerIcon = document.getElementById('winner-icon');
+            const restartBtn = document.getElementById('restart-btn');
+            
+            let items = [];
+            let counts = {
+                rock: 50,
+                paper: 50,
+                scissors: 50
+            };
+            let animationId;
+            let gameRunning = false;
+            let gameSpeed = 1.5;
+            
+            // Inicializa o jogo
+            function initGame() {
+                // Limpa itens existentes
+                items.forEach(item => {
+                    if (item.element && item.element.parentNode) {
+                        item.element.parentNode.removeChild(item.element);
+                    }
+                });
+                items = [];
+                gameRunning = true;
+                
+                // Pega valores do painel de configuração
+                gameSpeed = parseFloat(document.getElementById('game-speed').value);
+                counts = {
+                    rock: parseInt(document.getElementById('rock-qty').value),
+                    paper: parseInt(document.getElementById('paper-qty').value),
+                    scissors: parseInt(document.getElementById('scissors-qty').value)
+                };
+                
+                updateCounters();
+                
+                // Esconde o painel de configuração
+                configPanel.style.display = 'none';
+                
+                // Cria os itens com a velocidade configurada
+                createItems('rock', counts.rock);
+                createItems('paper', counts.paper);
+                createItems('scissors', counts.scissors);
+                
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+                animate();
+            }
+            
+            // Cria múltiplos itens de um tipo
+            function createItems(type, quantity) {
+                for (let i = 0; i < quantity; i++) {
+                    createItem(type);
+                }
+            }
+            
+            // Cria um único item
+            function createItem(type) {
+                const element = document.createElement('div');
+                element.className = `item ${type}`;
+                
+                let emoji;
+                switch (type) {
+                    case 'rock': emoji = '✊'; break;
+                    case 'paper': emoji = '✋'; break;
+                    case 'scissors': emoji = '✌️'; break;
+                }
+                element.textContent = emoji;
+                
+                const x = Math.random() * (gameArea.offsetWidth - 50);
+                const y = Math.random() * (gameArea.offsetHeight - 50);
+                
+                const speedX = (Math.random() - 0.5) * 2 * gameSpeed;
+                const speedY = (Math.random() - 0.5) * 2 * gameSpeed;
+                
+                gameArea.appendChild(element);
+                
+                items.push({
+                    element,
+                    type,
+                    x,
+                    y,
+                    speedX,
+                    speedY,
+                    width: 50,
+                    height: 50
+                });
+            }
+            
+            // Atualiza os contadores na tela
+            function updateCounters() {
+                rockCountElement.innerHTML = `<i class="fas fa-hand-rock"></i> Pedra: ${counts.rock}`;
+                paperCountElement.innerHTML = `<i class="fas fa-hand-paper"></i> Papel: ${counts.paper}`;
+                scissorsCountElement.innerHTML = `<i class="fas fa-hand-scissors"></i> Tesoura: ${counts.scissors}`;
+            }
+            
+            // Verifica colisão entre dois itens
+            function checkCollision(item1, item2) {
+                return (
+                    item1.x < item2.x + item2.width &&
+                    item1.x + item1.width > item2.x &&
+                    item1.y < item2.y + item2.height &&
+                    item1.y + item1.height > item2.y
+                );
+            }
+            
+            // Determina o vencedor de uma colisão
+            function determineWinner(type1, type2) {
+                if (type1 === type2) return null;
+                
+                const rules = {
+                    rock: 'scissors',
+                    scissors: 'paper',
+                    paper: 'rock'
+                };
+                
+                if (rules[type1] === type2) {
+                    return type1;
+                } else {
+                    return type2;
+                }
+            }
+            
+            // Processa uma colisão entre dois itens
+            function processCollision(item1, item2) {
+                const winnerType = determineWinner(item1.type, item2.type);
+                
+                if (!winnerType) return;
+                
+                const loserItem = winnerType === item1.type ? item2 : item1;
+                const loserType = loserItem.type;
+                
+                // Converte o perdedor para o tipo do vencedor
+                loserItem.type = winnerType;
+                loserItem.element.className = `item ${winnerType}`;
+                
+                switch (winnerType) {
+                    case 'rock': loserItem.element.textContent = '✊'; break;
+                    case 'paper': loserItem.element.textContent = '✋'; break;
+                    case 'scissors': loserItem.element.textContent = '✌️'; break;
+                }
+                
+                // Atualiza contagem
+                counts[loserType]--;
+                counts[winnerType]++;
+                updateCounters();
+                
+                // Verifica se o jogo acabou
+                checkGameEnd();
+            }
+            
+            // Cria efeito de confete
+            function createConfetti() {
+                const colors = ['#ff6b6b', '#4a6fa5', '#4ecdc4', '#f9c74f', '#90be6d', '#577590'];
+                const confettiCount = 200;
+                
+                for (let i = 0; i < confettiCount; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.top = -10 + 'px';
+                    confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    const animationDuration = Math.random() * 3 + 2;
+                    
+                    confetti.animate([
+                        { top: '-10px', opacity: 1 },
+                        { top: '100vh', opacity: 0 }
+                    ], {
+                        duration: animationDuration * 1000,
+                        easing: 'cubic-bezier(0.1, 0.8, 0.9, 1)',
+                        delay: Math.random() * 2000
+                    });
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, animationDuration * 1000);
+                }
+            }
+            
+            // Cria efeito de fogos de artifício
+            function createFireworks() {
+                const colors = ['#ff6b6b', '#4a6fa5', '#4ecdc4', '#f9c74f'];
+                
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        const x = Math.random() * window.innerWidth;
+                        const y = Math.random() * window.innerHeight;
+                        
+                        for (let j = 0; j < 30; j++) {
+                            const firework = document.createElement('div');
+                            firework.className = 'firework';
+                            firework.style.color = colors[Math.floor(Math.random() * colors.length)];
+                            firework.style.left = x + 'px';
+                            firework.style.top = y + 'px';
+                            
+                            const angle = Math.random() * Math.PI * 2;
+                            const distance = Math.random() * 200 + 100;
+                            const xEnd = Math.cos(angle) * distance;
+                            const yEnd = Math.sin(angle) * distance;
+                            
+                            firework.style.setProperty('--x', xEnd + 'px');
+                            firework.style.setProperty('--y', yEnd + 'px');
+                            
+                            document.body.appendChild(firework);
+                            
+                            setTimeout(() => {
+                                firework.remove();
+                            }, 1000);
+                        }
+                    }, i * 300);
+                }
+            }
+            
+            // Cria troféus flutuantes
+            function createTrophies() {
+                for (let i = 0; i < 10; i++) {
+                    const trophy = document.createElement('div');
+                    trophy.className = 'trophy';
+                    trophy.innerHTML = '<i class="fas fa-trophy"></i>';
+                    trophy.style.left = Math.random() * 100 + 'vw';
+                    trophy.style.top = Math.random() * 100 + 'vh';
+                    
+                    document.body.appendChild(trophy);
+                    
+                    setTimeout(() => {
+                        trophy.style.opacity = '1';
+                    }, 100);
+                    
+                    setTimeout(() => {
+                        trophy.style.opacity = '0';
+                        setTimeout(() => {
+                            trophy.remove();
+                        }, 1000);
+                    }, 3000);
+                }
+            }
+            
+            // Verifica se o jogo terminou
+            function checkGameEnd() {
+                const remainingTypes = new Set(items.map(item => item.type));
+                
+                if (remainingTypes.size === 1) {
+                    gameRunning = false;
+                    const winner = remainingTypes.values().next().value;
+                    
+                    let winnerNameText, winnerIconClass, winnerColor;
+                    switch (winner) {
+                        case 'rock': 
+                            winnerNameText = 'PEDRA'; 
+                            winnerIconClass = 'fas fa-hand-rock';
+                            winnerColor = 'var(--secondary-color)';
+                            break;
+                        case 'paper': 
+                            winnerNameText = 'PAPEL'; 
+                            winnerIconClass = 'fas fa-hand-paper';
+                            winnerColor = 'var(--primary-color)';
+                            break;
+                        case 'scissors': 
+                            winnerNameText = 'TESOURA'; 
+                            winnerIconClass = 'fas fa-hand-scissors';
+                            winnerColor = 'var(--accent-color)';
+                            break;
+                    }
+                    
+                    // Atualiza o display do vencedor
+                    winnerName.textContent = winnerNameText;
+                    winnerName.style.color = winnerColor;
+                    winnerIcon.className = `winner-icon ${winnerIconClass}`;
+                    winnerIcon.style.color = winnerColor;
+                    
+                    // Mostra o display
+                    winnerDisplay.style.display = 'block';
+                    
+                    // Efeitos de vitória
+                    createConfetti();
+                    createFireworks();
+                    createTrophies();
+                    
+                    // Efeito de brilho
+                    const glow = document.querySelector('.winner-glow');
+                    glow.animate([
+                        { opacity: 0 },
+                        { opacity: 0.8 },
+                        { opacity: 0 }
+                    ], {
+                        duration: 3000,
+                        iterations: Infinity
+                    });
+                }
+            }
+            
+            // Loop de animação
+            function animate() {
+                if (!gameRunning) return;
+                
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+                    
+                    item.x += item.speedX;
+                    item.y += item.speedY;
+                    
+                    if (item.x <= 0 || item.x + item.width >= gameArea.offsetWidth) {
+                        item.speedX *= -1;
+                    }
+                    
+                    if (item.y <= 0 || item.y + item.height >= gameArea.offsetHeight) {
+                        item.speedY *= -1;
+                    }
+                    
+                    item.element.style.left = `${item.x}px`;
+                    item.element.style.top = `${item.y}px`;
+                    
+                    for (let j = i + 1; j < items.length; j++) {
+                        const otherItem = items[j];
+                        if (checkCollision(item, otherItem)) {
+                            processCollision(item, otherItem);
+                        }
+                    }
+                }
+                
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            // Evento de redimensionamento
+            window.addEventListener('resize', () => {
+                items.forEach(item => {
+                    if (item.x + item.width > gameArea.offsetWidth) {
+                        item.x = gameArea.offsetWidth - item.width;
+                    }
+                    if (item.y + item.height > gameArea.offsetHeight) {
+                        item.y = gameArea.offsetHeight - item.height;
+                    }
+                });
+            });
+            
+            // Event listeners
+            startBtn.addEventListener('click', initGame);
+            
+            restartBtn.addEventListener('click', () => {
+                // Remove todos os efeitos visuais
+                document.querySelectorAll('.confetti, .firework, .trophy').forEach(el => el.remove());
+                
+                winnerDisplay.style.display = 'none';
+                configPanel.style.display = 'flex';
+            });
+            
+            // Mostra o painel de configuração inicialmente
+            configPanel.style.display = 'flex';
+        });
+    </script>
+</body>
+</html>
