@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pedra, Papel e Tesoura - Batalha Épica</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -16,12 +16,17 @@
             --warning-color: #ff9800;
         }
         
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             margin: 0;
             overflow: hidden;
             font-family: 'Poppins', sans-serif;
             background-color: #f0f0f0;
             color: #333;
+            touch-action: manipulation;
         }
         
         #game-container {
@@ -34,13 +39,14 @@
         
         #counters-bar {
             background-color: var(--dark-color);
-            padding: 12px 0;
+            padding: 10px 0;
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             flex-shrink: 0;
+            flex-wrap: wrap;
         }
         
         #game-area {
@@ -53,24 +59,28 @@
         }
 
         .counter {
-            min-width: 200px;
-            padding: 12px 20px;
+            min-width: 120px;
+            padding: 8px 12px;
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 8px;
             font-weight: 600;
-            font-size: 18px;
+            font-size: 14px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             z-index: 1000;
-            margin: 0 15px;
+            margin: 5px;
             text-align: center;
             box-sizing: border-box;
             transition: transform 0.2s, box-shadow 0.2s;
             border-left: 4px solid;
         }
         
-        .counter:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        @media (min-width: 768px) {
+            .counter {
+                min-width: 200px;
+                padding: 12px 20px;
+                font-size: 18px;
+                margin: 0 15px;
+            }
         }
         
         #rock-count {
@@ -90,17 +100,25 @@
         
         .item {
             position: absolute;
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 30px;
+            font-size: 24px;
             user-select: none;
             transition: transform 0.2s;
             z-index: 1;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        @media (min-width: 768px) {
+            .item {
+                width: 50px;
+                height: 50px;
+                font-size: 30px;
+            }
         }
         
         .item:hover {
@@ -130,17 +148,25 @@
             text-align: center;
             z-index: 1000;
             display: none;
+            width: 90%;
+            max-width: 500px;
         }
         
         .winner-content {
             background-color: rgba(255, 255, 255, 0.95);
-            padding: 40px 60px;
+            padding: 20px;
             border-radius: 20px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
             transform: scale(0);
             animation: winnerScaleIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        @media (min-width: 768px) {
+            .winner-content {
+                padding: 40px 60px;
+            }
         }
         
         @keyframes winnerScaleIn {
@@ -150,16 +176,16 @@
         }
         
         .winner-title {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 600;
             color: #666;
             margin-bottom: 5px;
         }
         
         .winner-name {
-            font-size: 72px;
+            font-size: 36px;
             font-weight: 700;
-            margin: 20px 0;
+            margin: 15px 0;
             background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -167,16 +193,34 @@
             text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
+        @media (min-width: 768px) {
+            .winner-title {
+                font-size: 24px;
+            }
+            
+            .winner-name {
+                font-size: 72px;
+                margin: 20px 0;
+            }
+        }
+        
         .winner-subtitle {
-            font-size: 18px;
+            font-size: 14px;
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            .winner-subtitle {
+                font-size: 18px;
+                margin-bottom: 30px;
+            }
         }
         
         #restart-btn {
-            margin-top: 25px;
-            padding: 15px 40px;
-            font-size: 18px;
+            margin-top: 15px;
+            padding: 12px 25px;
+            font-size: 16px;
             font-weight: 600;
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             color: white;
@@ -188,6 +232,14 @@
             position: relative;
             overflow: hidden;
             z-index: 1;
+        }
+        
+        @media (min-width: 768px) {
+            #restart-btn {
+                margin-top: 25px;
+                padding: 15px 40px;
+                font-size: 18px;
+            }
         }
         
         #restart-btn:hover {
@@ -218,8 +270,8 @@
         
         .confetti {
             position: absolute;
-            width: 15px;
-            height: 15px;
+            width: 10px;
+            height: 10px;
             background-color: #f00;
             opacity: 0;
             z-index: 999;
@@ -227,27 +279,40 @@
         
         .winner-decoration {
             position: absolute;
-            font-size: 120px;
+            font-size: 80px;
             opacity: 0.1;
             z-index: -1;
         }
         
+        @media (min-width: 768px) {
+            .winner-decoration {
+                font-size: 120px;
+            }
+        }
+        
         .decoration-1 {
-            top: 20px;
-            left: 30px;
+            top: 10px;
+            left: 10px;
             color: var(--secondary-color);
         }
         
         .decoration-2 {
-            bottom: 20px;
-            right: 30px;
+            bottom: 10px;
+            right: 10px;
             color: var(--primary-color);
         }
         
         .winner-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
+            font-size: 50px;
+            margin-bottom: 15px;
             animation: bounce 2s infinite;
+        }
+        
+        @media (min-width: 768px) {
+            .winner-icon {
+                font-size: 80px;
+                margin-bottom: 20px;
+            }
         }
         
         @keyframes bounce {
@@ -273,12 +338,18 @@
         
         .trophy {
             position: absolute;
-            font-size: 100px;
+            font-size: 60px;
             color: gold;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
             animation: rotateTrophy 3s linear infinite;
             opacity: 0;
             z-index: 999;
+        }
+        
+        @media (min-width: 768px) {
+            .trophy {
+                font-size: 100px;
+            }
         }
         
         @keyframes rotateTrophy {
@@ -311,18 +382,28 @@
             z-index: 2000;
             backdrop-filter: blur(5px);
             animation: fadeIn 0.5s ease-out;
+            padding: 20px;
+            overflow-y: auto;
         }
 
         .config-container {
             background-color: white;
-            padding: 40px;
-            border-radius: 20px;
+            padding: 20px;
+            border-radius: 15px;
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            width: 400px;
-            max-width: 90%;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
             text-align: center;
             position: relative;
-            overflow: hidden;
+            overflow-y: auto;
+        }
+
+        @media (min-width: 768px) {
+            .config-container {
+                padding: 30px;
+                border-radius: 20px;
+            }
         }
 
         .config-container::before {
@@ -331,49 +412,96 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 10px;
+            height: 8px;
             background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
         }
 
-        .welcome-title {
-            font-size: 28px;
+        .game-logo {
+            font-size: 20px;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            display: inline-block;
+            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        @media (min-width: 768px) {
+            .game-logo {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+        }
+
+        .welcome-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
             color: var(--dark-color);
             background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+        
+        @media (min-width: 768px) {
+            .welcome-title {
+                font-size: 28px;
+                margin-bottom: 10px;
+            }
+        }
 
         .welcome-message {
-            font-size: 16px;
+            font-size: 14px;
             color: #666;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             line-height: 1.5;
+        }
+        
+        @media (min-width: 768px) {
+            .welcome-message {
+                font-size: 16px;
+                margin-bottom: 30px;
+            }
         }
 
         .config-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-align: left;
         }
 
         .config-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
             color: var(--dark-color);
-            font-size: 14px;
+            font-size: 13px;
+        }
+        
+        @media (min-width: 768px) {
+            .config-group label {
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
         }
 
         .config-group input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 10px 12px;
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 6px;
+            font-size: 14px;
             transition: all 0.3s;
             box-sizing: border-box;
+        }
+        
+        @media (min-width: 768px) {
+            .config-group input {
+                padding: 12px 15px;
+                font-size: 16px;
+                border-radius: 8px;
+            }
         }
 
         .config-group input:focus {
@@ -386,20 +514,29 @@
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             color: white;
             border: none;
-            padding: 15px 30px;
+            padding: 12px 20px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
-            margin-top: 15px;
+            margin-top: 10px;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 6px;
             width: 100%;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(74, 111, 165, 0.3);
+            box-shadow: 0 4px 10px rgba(74, 111, 165, 0.3);
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+        
+        @media (min-width: 768px) {
+            #start-btn {
+                padding: 15px 30px;
+                font-size: 16px;
+                margin-top: 15px;
+                border-radius: 8px;
+            }
         }
 
         #start-btn:hover {
@@ -414,62 +551,93 @@
 
         .input-with-icon i {
             position: absolute;
-            left: 15px;
+            left: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: #999;
+            font-size: 14px;
+        }
+        
+        @media (min-width: 768px) {
+            .input-with-icon i {
+                left: 15px;
+                font-size: 16px;
+            }
         }
 
         .input-with-icon input {
-            padding-left: 40px;
+            padding-left: 35px;
+        }
+        
+        @media (min-width: 768px) {
+            .input-with-icon input {
+                padding-left: 40px;
+            }
         }
 
         .emoji-icon {
-            font-size: 20px;
-            margin-right: 10px;
+            font-size: 16px;
+            margin-right: 8px;
             vertical-align: middle;
         }
-
-        .game-logo {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: inline-block;
-            background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        
+        @media (min-width: 768px) {
+            .emoji-icon {
+                font-size: 20px;
+                margin-right: 10px;
+            }
         }
 
         .version {
-            font-size: 12px;
+            font-size: 11px;
             color: #999;
-            margin-top: 20px;
+            margin-top: 15px;
             display: block;
+        }
+        
+        @media (min-width: 768px) {
+            .version {
+                font-size: 12px;
+                margin-top: 20px;
+            }
         }
 
         .slider-container {
-            margin-top: 10px;
+            margin-top: 8px;
         }
 
         .slider-container input[type="range"] {
             width: 100%;
-            height: 8px;
+            height: 6px;
             -webkit-appearance: none;
             background: #e0e0e0;
-            border-radius: 5px;
+            border-radius: 3px;
             outline: none;
             margin-top: 5px;
+        }
+        
+        @media (min-width: 768px) {
+            .slider-container input[type="range"] {
+                height: 8px;
+                border-radius: 5px;
+            }
         }
 
         .slider-container input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             background: var(--primary-color);
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.2s;
+        }
+        
+        @media (min-width: 768px) {
+            .slider-container input[type="range"]::-webkit-slider-thumb {
+                width: 20px;
+                height: 20px;
+            }
         }
 
         .slider-container input[type="range"]::-webkit-slider-thumb:hover {
@@ -479,31 +647,46 @@
 
         .size-preview {
             display: inline-block;
-            width: 30px;
-            height: 30px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background-color: var(--primary-color);
-            margin-left: 10px;
+            margin-left: 8px;
             vertical-align: middle;
             transition: all 0.3s;
+        }
+        
+        @media (min-width: 768px) {
+            .size-preview {
+                width: 30px;
+                height: 30px;
+                margin-left: 10px;
+            }
         }
 
         /* Controles de música */
         .music-controls {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 15px;
+            right: 15px;
             z-index: 1000;
+        }
+        
+        @media (min-width: 768px) {
+            .music-controls {
+                bottom: 20px;
+                right: 20px;
+            }
         }
 
         .music-btn {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background-color: var(--primary-color);
             color: white;
             border: none;
-            font-size: 20px;
+            font-size: 16px;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             display: flex;
@@ -511,10 +694,52 @@
             align-items: center;
             transition: all 0.3s;
         }
+        
+        @media (min-width: 768px) {
+            .music-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
 
         .music-btn:hover {
             transform: scale(1.1);
             background-color: var(--accent-color);
+        }
+
+        .music-alert {
+            position: fixed;
+            bottom: 60px;
+            right: 15px;
+            background-color: var(--dark-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1001;
+            display: none;
+            max-width: 180px;
+            font-size: 12px;
+            animation: fadeInOut 3s ease-in-out;
+        }
+        
+        @media (min-width: 768px) {
+            .music-alert {
+                bottom: 80px;
+                right: 20px;
+                padding: 10px 15px;
+                max-width: 200px;
+                font-size: 14px;
+                border-radius: 8px;
+            }
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(10px); }
+            20% { opacity: 1; transform: translateY(0); }
+            80% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(10px); }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -533,7 +758,7 @@
                 <label for="rock-qty"><i class="fas fa-hand-rock emoji-icon"></i> Quantidade de Pedras</label>
                 <div class="input-with-icon">
                     <i class="fas fa-mountain"></i>
-                    <input type="number" id="rock-qty" value="50" min="1" placeholder="Quantidade de pedras">
+                    <input type="number" id="rock-qty" value="30" min="1" placeholder="Quantidade de pedras">
                 </div>
             </div>
             
@@ -541,7 +766,7 @@
                 <label for="paper-qty"><i class="fas fa-hand-paper emoji-icon"></i> Quantidade de Papéis</label>
                 <div class="input-with-icon">
                     <i class="fas fa-scroll"></i>
-                    <input type="number" id="paper-qty" value="50" min="1" placeholder="Quantidade de papéis">
+                    <input type="number" id="paper-qty" value="30" min="1" placeholder="Quantidade de papéis">
                 </div>
             </div>
             
@@ -549,7 +774,7 @@
                 <label for="scissors-qty"><i class="fas fa-hand-scissors emoji-icon"></i> Quantidade de Tesouras</label>
                 <div class="input-with-icon">
                     <i class="fas fa-cut"></i>
-                    <input type="number" id="scissors-qty" value="50" min="1" placeholder="Quantidade de tesouras">
+                    <input type="number" id="scissors-qty" value="30" min="1" placeholder="Quantidade de tesouras">
                 </div>
             </div>
             
@@ -573,16 +798,16 @@
                 <i class="fas fa-play"></i> Iniciar Batalha
             </button>
             
-            <span class="version">Versão 2.3 • Batalha Épica</span>
+            <span class="version">Versão 2.5 • Batalha Épica</span>
             <span class="version" style="margin-top: 5px;">Eric Nascimento - Edm3 Soluções</span>
         </div>
     </div>
     
     <div id="game-container">
         <div id="counters-bar">
-            <div id="rock-count" class="counter"><i class="fas fa-hand-rock"></i> Pedra: 50</div>
-            <div id="paper-count" class="counter"><i class="fas fa-hand-paper"></i> Papel: 50</div>
-            <div id="scissors-count" class="counter"><i class="fas fa-hand-scissors"></i> Tesoura: 50</div>
+            <div id="rock-count" class="counter"><i class="fas fa-hand-rock"></i> Pedra: 30</div>
+            <div id="paper-count" class="counter"><i class="fas fa-hand-paper"></i> Papel: 30</div>
+            <div id="scissors-count" class="counter"><i class="fas fa-hand-scissors"></i> Tesoura: 30</div>
         </div>
         
         <div id="game-area">
@@ -608,10 +833,11 @@
     <!-- Controles de música -->
     <div class="music-controls">
         <button class="music-btn" id="music-toggle"><i class="fas fa-music"></i></button>
+        <div class="music-alert" id="music-alert">Clique para ativar a música</div>
     </div>
 
     <!-- Elemento de áudio -->
-    <audio id="bg-music" loop>
+    <audio id="bg-music" loop preload="auto">
         <source src="https://assets.mixkit.co/music/preview/mixkit-racing-loop-1091.mp3" type="audio/mpeg">
         Seu navegador não suporta o elemento de áudio.
     </audio>
@@ -632,45 +858,75 @@
             const sizePreview = document.getElementById('size-preview');
             const musicToggle = document.getElementById('music-toggle');
             const bgMusic = document.getElementById('bg-music');
+            const musicAlert = document.getElementById('music-alert');
             
             let items = [];
             let counts = {
-                rock: 50,
-                paper: 50,
-                scissors: 50
+                rock: 30,
+                paper: 30,
+                scissors: 30
             };
             let animationId;
             let gameRunning = false;
             let gameSpeed = 1.5;
             let itemSize = 50;
             let musicPlaying = false;
-            
-            // Controle de música
-            musicToggle.addEventListener('click', () => {
-                if (musicPlaying) {
-                    bgMusic.pause();
-                    musicToggle.innerHTML = '<i class="fas fa-music"></i>';
-                    musicPlaying = false;
-                } else {
-                    bgMusic.play();
-                    musicToggle.innerHTML = '<i class="fas fa-pause"></i>';
-                    musicPlaying = true;
-                }
-            });
-            
-            // Atualiza o preview do tamanho
+            let musicInitialized = false;
+
+            // Mostra o aviso de música
+            function showMusicAlert(message) {
+                musicAlert.textContent = message;
+                musicAlert.style.display = 'block';
+                setTimeout(() => {
+                    musicAlert.style.display = 'none';
+                }, 3000);
+            }
+
+            // Inicializa o preview do tamanho
             itemSizeSlider.addEventListener('input', () => {
                 itemSize = parseInt(itemSizeSlider.value);
                 sizePreview.style.width = `${itemSize * 0.3}px`;
                 sizePreview.style.height = `${itemSize * 0.3}px`;
             });
             
-            // Inicializa o preview
+            // Configura o preview inicial
             sizePreview.style.width = `${itemSize * 0.3}px`;
             sizePreview.style.height = `${itemSize * 0.3}px`;
             
+            // Controle de música
+            musicToggle.addEventListener('click', async () => {
+                try {
+                    if (!musicInitialized) {
+                        // Primeira interação - inicializa o áudio
+                        bgMusic.volume = 0.3;
+                        await bgMusic.play();
+                        bgMusic.pause();
+                        musicInitialized = true;
+                        showMusicAlert("Música pronta! Clique novamente para tocar");
+                        return;
+                    }
+                    
+                    if (musicPlaying) {
+                        await bgMusic.pause();
+                        musicToggle.innerHTML = '<i class="fas fa-music"></i>';
+                    } else {
+                        await bgMusic.play();
+                        musicToggle.innerHTML = '<i class="fas fa-pause"></i>';
+                    }
+                    musicPlaying = !musicPlaying;
+                } catch (error) {
+                    console.error("Erro no controle de música:", error);
+                    showMusicAlert("Erro ao carregar música. Atualize a página.");
+                }
+            });
+
+            // Mostra aviso inicial sobre a música
+            setTimeout(() => {
+                showMusicAlert("Clique no botão de música para ativar");
+            }, 2000);
+            
             // Inicializa o jogo
-            function initGame() {
+            async function initGame() {
                 // Limpa itens existentes
                 items.forEach(item => {
                     if (item.element && item.element.parentNode) {
@@ -694,16 +950,16 @@
                 // Esconde o painel de configuração
                 configPanel.style.display = 'none';
                 
-                // Inicia a música (com volume reduzido)
-                bgMusic.volume = 0.3;
-                bgMusic.play().then(() => {
-                    musicPlaying = true;
-                    musicToggle.innerHTML = '<i class="fas fa-pause"></i>';
-                }).catch(error => {
-                    console.log("Reprodução automática bloqueada:", error);
-                });
+                // Tenta iniciar a música se já foi inicializada
+                if (musicInitialized && musicPlaying) {
+                    try {
+                        await bgMusic.play();
+                    } catch (error) {
+                        console.log("Erro ao reproduzir música:", error);
+                    }
+                }
                 
-                // Cria os itens com a velocidade configurada
+                // Cria os itens
                 createItems('rock', counts.rock);
                 createItems('paper', counts.paper);
                 createItems('scissors', counts.scissors);
