@@ -447,6 +447,75 @@
             margin-top: 20px;
             display: block;
         }
+
+        .slider-container {
+            margin-top: 10px;
+        }
+
+        .slider-container input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 5px;
+            outline: none;
+            margin-top: 5px;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            background: var(--accent-color);
+        }
+
+        .size-preview {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            margin-left: 10px;
+            vertical-align: middle;
+            transition: all 0.3s;
+        }
+
+        /* Controles de música */
+        .music-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .music-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .music-btn:hover {
+            transform: scale(1.1);
+            background-color: var(--accent-color);
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -492,14 +561,20 @@
                 </div>
             </div>
             
+            <div class="config-group">
+                <label for="item-size"><i class="fas fa-expand-alt emoji-icon"></i> Tamanho dos Itens</label>
+                <div class="slider-container">
+                    <input type="range" id="item-size" min="20" max="100" value="50" step="5">
+                    <div class="size-preview" id="size-preview"></div>
+                </div>
+            </div>
+            
             <button id="start-btn">
                 <i class="fas fa-play"></i> Iniciar Batalha
             </button>
             
-            <span class="version">Versão 2.1 • Batalha Épica</span>
-			<!--<span class="Eric Nascimento - Edm3 Soluções">, 20, love.graphics.getHeight() - 15) </span>-->
-			<span class="version" style="margin-top: 5px;">Eric Nascimento - Edm3 Soluções</span>
-			
+            <span class="version">Versão 2.3 • Batalha Épica</span>
+            <span class="version" style="margin-top: 5px;">Eric Nascimento - Edm3 Soluções</span>
         </div>
     </div>
     
@@ -529,6 +604,17 @@
             </div>
         </div>
     </div>
+
+    <!-- Controles de música -->
+    <div class="music-controls">
+        <button class="music-btn" id="music-toggle"><i class="fas fa-music"></i></button>
+    </div>
+
+    <!-- Elemento de áudio -->
+    <audio id="bg-music" loop>
+        <source src="https://assets.mixkit.co/music/preview/mixkit-racing-loop-1091.mp3" type="audio/mpeg">
+        Seu navegador não suporta o elemento de áudio.
+    </audio>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -542,6 +628,10 @@
             const winnerName = document.getElementById('winner-name');
             const winnerIcon = document.getElementById('winner-icon');
             const restartBtn = document.getElementById('restart-btn');
+            const itemSizeSlider = document.getElementById('item-size');
+            const sizePreview = document.getElementById('size-preview');
+            const musicToggle = document.getElementById('music-toggle');
+            const bgMusic = document.getElementById('bg-music');
             
             let items = [];
             let counts = {
@@ -552,6 +642,32 @@
             let animationId;
             let gameRunning = false;
             let gameSpeed = 1.5;
+            let itemSize = 50;
+            let musicPlaying = false;
+            
+            // Controle de música
+            musicToggle.addEventListener('click', () => {
+                if (musicPlaying) {
+                    bgMusic.pause();
+                    musicToggle.innerHTML = '<i class="fas fa-music"></i>';
+                    musicPlaying = false;
+                } else {
+                    bgMusic.play();
+                    musicToggle.innerHTML = '<i class="fas fa-pause"></i>';
+                    musicPlaying = true;
+                }
+            });
+            
+            // Atualiza o preview do tamanho
+            itemSizeSlider.addEventListener('input', () => {
+                itemSize = parseInt(itemSizeSlider.value);
+                sizePreview.style.width = `${itemSize * 0.3}px`;
+                sizePreview.style.height = `${itemSize * 0.3}px`;
+            });
+            
+            // Inicializa o preview
+            sizePreview.style.width = `${itemSize * 0.3}px`;
+            sizePreview.style.height = `${itemSize * 0.3}px`;
             
             // Inicializa o jogo
             function initGame() {
@@ -566,6 +682,7 @@
                 
                 // Pega valores do painel de configuração
                 gameSpeed = parseFloat(document.getElementById('game-speed').value);
+                itemSize = parseInt(itemSizeSlider.value);
                 counts = {
                     rock: parseInt(document.getElementById('rock-qty').value),
                     paper: parseInt(document.getElementById('paper-qty').value),
@@ -576,6 +693,15 @@
                 
                 // Esconde o painel de configuração
                 configPanel.style.display = 'none';
+                
+                // Inicia a música (com volume reduzido)
+                bgMusic.volume = 0.3;
+                bgMusic.play().then(() => {
+                    musicPlaying = true;
+                    musicToggle.innerHTML = '<i class="fas fa-pause"></i>';
+                }).catch(error => {
+                    console.log("Reprodução automática bloqueada:", error);
+                });
                 
                 // Cria os itens com a velocidade configurada
                 createItems('rock', counts.rock);
@@ -608,8 +734,13 @@
                 }
                 element.textContent = emoji;
                 
-                const x = Math.random() * (gameArea.offsetWidth - 50);
-                const y = Math.random() * (gameArea.offsetHeight - 50);
+                // Aplica o tamanho configurado
+                element.style.width = `${itemSize}px`;
+                element.style.height = `${itemSize}px`;
+                element.style.fontSize = `${itemSize * 0.6}px`;
+                
+                const x = Math.random() * (gameArea.offsetWidth - itemSize);
+                const y = Math.random() * (gameArea.offsetHeight - itemSize);
                 
                 const speedX = (Math.random() - 0.5) * 2 * gameSpeed;
                 const speedY = (Math.random() - 0.5) * 2 * gameSpeed;
@@ -623,8 +754,8 @@
                     y,
                     speedX,
                     speedY,
-                    width: 50,
-                    height: 50
+                    width: itemSize,
+                    height: itemSize
                 });
             }
             
@@ -886,6 +1017,11 @@
             restartBtn.addEventListener('click', () => {
                 // Remove todos os efeitos visuais
                 document.querySelectorAll('.confetti, .firework, .trophy').forEach(el => el.remove());
+                
+                // Pausa a música
+                bgMusic.pause();
+                musicPlaying = false;
+                musicToggle.innerHTML = '<i class="fas fa-music"></i>';
                 
                 winnerDisplay.style.display = 'none';
                 configPanel.style.display = 'flex';
