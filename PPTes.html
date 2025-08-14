@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedra, Papel e Tesoura - Batalha Épica</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -18,68 +18,68 @@
         
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
         
         body {
-            margin: 0;
-            overflow: hidden;
             font-family: 'Poppins', sans-serif;
             background-color: #f0f0f0;
             color: #333;
-            touch-action: manipulation;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
         }
         
         #game-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
             display: flex;
             flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
         }
         
         #counters-bar {
             background-color: var(--dark-color);
-            padding: 10px 0;
+            padding: 10px 5px;
             display: flex;
             justify-content: center;
+            flex-wrap: nowrap;
             align-items: center;
             z-index: 1000;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             flex-shrink: 0;
-            flex-wrap: wrap;
+            overflow-x: auto;
+            white-space: nowrap;
         }
         
-        #game-area {
-            flex-grow: 1;
-            position: relative;
-            overflow: hidden;
-            background-color: #f0f0f0;
-            background-image: radial-gradient(circle at 50% 50%, #e0e0e0 1px, transparent 1px);
-            background-size: 20px 20px;
+        @media (max-width: 768px) {
+            #counters-bar {
+                flex-wrap: wrap;
+                padding: 8px 2px;
+            }
         }
-
+        
         .counter {
-            min-width: 120px;
-            padding: 8px 12px;
+            min-width: 150px;
+            padding: 10px 15px;
             background-color: rgba(255, 255, 255, 0.95);
             border-radius: 8px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: clamp(14px, 1.5vw, 18px);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            margin: 5px;
+            margin: 0 10px;
             text-align: center;
-            box-sizing: border-box;
-            transition: transform 0.2s, box-shadow 0.2s;
             border-left: 4px solid;
+            flex-shrink: 0;
         }
         
-        @media (min-width: 768px) {
+        @media (max-width: 768px) {
             .counter {
-                min-width: 200px;
-                padding: 12px 20px;
-                font-size: 18px;
-                margin: 0 15px;
+                min-width: 120px;
+                padding: 8px 10px;
+                margin: 3px;
+                font-size: 14px;
             }
         }
         
@@ -98,27 +98,28 @@
             color: var(--accent-color);
         }
         
+        #game-area {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: #f0f0f0;
+            background-image: radial-gradient(circle at 50% 50%, #e0e0e0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
         .item {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: clamp(40px, 4vw, 60px);
+            height: clamp(40px, 4vw, 60px);
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
+            font-size: clamp(24px, 2.5vw, 36px);
             user-select: none;
             transition: transform 0.2s;
             z-index: 1;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        @media (min-width: 768px) {
-            .item {
-                width: 50px;
-                height: 50px;
-                font-size: 30px;
-            }
         }
         
         .item:hover {
@@ -149,24 +150,18 @@
             z-index: 1000;
             display: none;
             width: 90%;
-            max-width: 500px;
+            max-width: 600px;
         }
         
         .winner-content {
             background-color: rgba(255, 255, 255, 0.95);
-            padding: 20px;
+            padding: clamp(20px, 3vw, 40px);
             border-radius: 20px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
             transform: scale(0);
             animation: winnerScaleIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        
-        @media (min-width: 768px) {
-            .winner-content {
-                padding: 40px 60px;
-            }
         }
         
         @keyframes winnerScaleIn {
@@ -176,16 +171,16 @@
         }
         
         .winner-title {
-            font-size: 18px;
+            font-size: clamp(18px, 2vw, 24px);
             font-weight: 600;
             color: #666;
             margin-bottom: 5px;
         }
         
         .winner-name {
-            font-size: 36px;
+            font-size: clamp(36px, 6vw, 72px);
             font-weight: 700;
-            margin: 15px 0;
+            margin: clamp(10px, 2vw, 20px) 0;
             background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -193,34 +188,16 @@
             text-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
-        @media (min-width: 768px) {
-            .winner-title {
-                font-size: 24px;
-            }
-            
-            .winner-name {
-                font-size: 72px;
-                margin: 20px 0;
-            }
-        }
-        
         .winner-subtitle {
-            font-size: 14px;
+            font-size: clamp(14px, 1.5vw, 18px);
             color: #666;
-            margin-bottom: 20px;
-        }
-        
-        @media (min-width: 768px) {
-            .winner-subtitle {
-                font-size: 18px;
-                margin-bottom: 30px;
-            }
+            margin-bottom: clamp(15px, 2vw, 30px);
         }
         
         #restart-btn {
-            margin-top: 15px;
-            padding: 12px 25px;
-            font-size: 16px;
+            margin-top: clamp(10px, 2vw, 25px);
+            padding: clamp(10px, 1.5vw, 15px) clamp(20px, 3vw, 40px);
+            font-size: clamp(14px, 1.5vw, 18px);
             font-weight: 600;
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             color: white;
@@ -232,14 +209,6 @@
             position: relative;
             overflow: hidden;
             z-index: 1;
-        }
-        
-        @media (min-width: 768px) {
-            #restart-btn {
-                margin-top: 25px;
-                padding: 15px 40px;
-                font-size: 18px;
-            }
         }
         
         #restart-btn:hover {
@@ -279,15 +248,9 @@
         
         .winner-decoration {
             position: absolute;
-            font-size: 80px;
+            font-size: clamp(60px, 8vw, 120px);
             opacity: 0.1;
             z-index: -1;
-        }
-        
-        @media (min-width: 768px) {
-            .winner-decoration {
-                font-size: 120px;
-            }
         }
         
         .decoration-1 {
@@ -303,16 +266,9 @@
         }
         
         .winner-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
+            font-size: clamp(40px, 6vw, 80px);
+            margin-bottom: clamp(10px, 2vw, 20px);
             animation: bounce 2s infinite;
-        }
-        
-        @media (min-width: 768px) {
-            .winner-icon {
-                font-size: 80px;
-                margin-bottom: 20px;
-            }
         }
         
         @keyframes bounce {
@@ -338,18 +294,12 @@
         
         .trophy {
             position: absolute;
-            font-size: 60px;
+            font-size: clamp(60px, 8vw, 100px);
             color: gold;
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
             animation: rotateTrophy 3s linear infinite;
             opacity: 0;
             z-index: 999;
-        }
-        
-        @media (min-width: 768px) {
-            .trophy {
-                font-size: 100px;
-            }
         }
         
         @keyframes rotateTrophy {
@@ -373,8 +323,8 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             background-color: rgba(43, 45, 66, 0.9);
             display: flex;
             justify-content: center;
@@ -383,27 +333,18 @@
             backdrop-filter: blur(5px);
             animation: fadeIn 0.5s ease-out;
             padding: 20px;
-            overflow-y: auto;
         }
 
         .config-container {
             background-color: white;
-            padding: 20px;
-            border-radius: 15px;
+            padding: clamp(20px, 3vw, 40px);
+            border-radius: clamp(15px, 2vw, 20px);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
             width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
+            max-width: min(90vw, 500px);
             text-align: center;
             position: relative;
-            overflow-y: auto;
-        }
-
-        @media (min-width: 768px) {
-            .config-container {
-                padding: 30px;
-                border-radius: 20px;
-            }
+            overflow: hidden;
         }
 
         .config-container::before {
@@ -417,91 +358,54 @@
         }
 
         .game-logo {
-            font-size: 20px;
+            font-size: clamp(20px, 2.5vw, 24px);
             font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: clamp(15px, 2vw, 20px);
             display: inline-block;
             background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
-        @media (min-width: 768px) {
-            .game-logo {
-                font-size: 24px;
-                margin-bottom: 20px;
-            }
-        }
 
         .welcome-title {
-            font-size: 22px;
+            font-size: clamp(20px, 3vw, 28px);
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: clamp(5px, 1vw, 10px);
             color: var(--dark-color);
             background: linear-gradient(90deg, var(--secondary-color), var(--primary-color), var(--accent-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
-        @media (min-width: 768px) {
-            .welcome-title {
-                font-size: 28px;
-                margin-bottom: 10px;
-            }
-        }
 
         .welcome-message {
-            font-size: 14px;
+            font-size: clamp(12px, 1.5vw, 16px);
             color: #666;
-            margin-bottom: 20px;
+            margin-bottom: clamp(15px, 3vw, 30px);
             line-height: 1.5;
-        }
-        
-        @media (min-width: 768px) {
-            .welcome-message {
-                font-size: 16px;
-                margin-bottom: 30px;
-            }
         }
 
         .config-group {
-            margin-bottom: 15px;
+            margin-bottom: clamp(10px, 2vw, 20px);
             text-align: left;
         }
 
         .config-group label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: clamp(4px, 1vw, 8px);
             font-weight: 600;
             color: var(--dark-color);
-            font-size: 13px;
-        }
-        
-        @media (min-width: 768px) {
-            .config-group label {
-                font-size: 14px;
-                margin-bottom: 8px;
-            }
+            font-size: clamp(12px, 1.5vw, 14px);
         }
 
         .config-group input {
             width: 100%;
-            padding: 10px 12px;
+            padding: clamp(8px, 1.5vw, 12px) clamp(10px, 2vw, 15px);
             border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 14px;
+            border-radius: clamp(6px, 1vw, 8px);
+            font-size: clamp(12px, 1.5vw, 16px);
             transition: all 0.3s;
-            box-sizing: border-box;
-        }
-        
-        @media (min-width: 768px) {
-            .config-group input {
-                padding: 12px 15px;
-                font-size: 16px;
-                border-radius: 8px;
-            }
         }
 
         .config-group input:focus {
@@ -514,29 +418,17 @@
             background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             color: white;
             border: none;
-            padding: 12px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 14px;
+            padding: clamp(10px, 1.5vw, 15px) clamp(15px, 3vw, 30px);
+            font-size: clamp(14px, 1.5vw, 16px);
             font-weight: 600;
-            margin-top: 10px;
+            margin-top: clamp(10px, 2vw, 15px);
             cursor: pointer;
-            border-radius: 6px;
+            border-radius: clamp(6px, 1vw, 8px);
             width: 100%;
             transition: all 0.3s;
             box-shadow: 0 4px 10px rgba(74, 111, 165, 0.3);
             text-transform: uppercase;
             letter-spacing: 1px;
-        }
-        
-        @media (min-width: 768px) {
-            #start-btn {
-                padding: 15px 30px;
-                font-size: 16px;
-                margin-top: 15px;
-                border-radius: 8px;
-            }
         }
 
         #start-btn:hover {
@@ -551,93 +443,52 @@
 
         .input-with-icon i {
             position: absolute;
-            left: 12px;
+            left: clamp(10px, 2vw, 15px);
             top: 50%;
             transform: translateY(-50%);
             color: #999;
-            font-size: 14px;
-        }
-        
-        @media (min-width: 768px) {
-            .input-with-icon i {
-                left: 15px;
-                font-size: 16px;
-            }
+            font-size: clamp(12px, 1.5vw, 16px);
         }
 
         .input-with-icon input {
-            padding-left: 35px;
-        }
-        
-        @media (min-width: 768px) {
-            .input-with-icon input {
-                padding-left: 40px;
-            }
+            padding-left: clamp(30px, 4vw, 40px);
         }
 
         .emoji-icon {
-            font-size: 16px;
-            margin-right: 8px;
+            font-size: clamp(14px, 2vw, 20px);
+            margin-right: clamp(5px, 1vw, 10px);
             vertical-align: middle;
-        }
-        
-        @media (min-width: 768px) {
-            .emoji-icon {
-                font-size: 20px;
-                margin-right: 10px;
-            }
         }
 
         .version {
-            font-size: 11px;
+            font-size: clamp(10px, 1.2vw, 12px);
             color: #999;
-            margin-top: 15px;
+            margin-top: clamp(10px, 2vw, 20px);
             display: block;
-        }
-        
-        @media (min-width: 768px) {
-            .version {
-                font-size: 12px;
-                margin-top: 20px;
-            }
         }
 
         .slider-container {
-            margin-top: 8px;
+            margin-top: clamp(5px, 1vw, 10px);
         }
 
         .slider-container input[type="range"] {
             width: 100%;
-            height: 6px;
+            height: clamp(5px, 0.8vw, 8px);
             -webkit-appearance: none;
             background: #e0e0e0;
-            border-radius: 3px;
+            border-radius: clamp(3px, 0.5vw, 5px);
             outline: none;
             margin-top: 5px;
-        }
-        
-        @media (min-width: 768px) {
-            .slider-container input[type="range"] {
-                height: 8px;
-                border-radius: 5px;
-            }
         }
 
         .slider-container input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
+            width: clamp(14px, 2vw, 20px);
+            height: clamp(14px, 2vw, 20px);
             background: var(--primary-color);
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.2s;
-        }
-        
-        @media (min-width: 768px) {
-            .slider-container input[type="range"]::-webkit-slider-thumb {
-                width: 20px;
-                height: 20px;
-            }
         }
 
         .slider-container input[type="range"]::-webkit-slider-thumb:hover {
@@ -647,60 +498,37 @@
 
         .size-preview {
             display: inline-block;
-            width: 24px;
-            height: 24px;
+            width: clamp(20px, 3vw, 30px);
+            height: clamp(20px, 3vw, 30px);
             border-radius: 50%;
             background-color: var(--primary-color);
-            margin-left: 8px;
+            margin-left: clamp(5px, 1vw, 10px);
             vertical-align: middle;
             transition: all 0.3s;
-        }
-        
-        @media (min-width: 768px) {
-            .size-preview {
-                width: 30px;
-                height: 30px;
-                margin-left: 10px;
-            }
         }
 
         /* Controles de música */
         .music-controls {
             position: fixed;
-            bottom: 15px;
-            right: 15px;
+            bottom: clamp(10px, 2vw, 20px);
+            right: clamp(10px, 2vw, 20px);
             z-index: 1000;
-        }
-        
-        @media (min-width: 768px) {
-            .music-controls {
-                bottom: 20px;
-                right: 20px;
-            }
         }
 
         .music-btn {
-            width: 40px;
-            height: 40px;
+            width: clamp(40px, 5vw, 50px);
+            height: clamp(40px, 5vw, 50px);
             border-radius: 50%;
             background-color: var(--primary-color);
             color: white;
             border: none;
-            font-size: 16px;
+            font-size: clamp(16px, 2vw, 20px);
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             display: flex;
             justify-content: center;
             align-items: center;
             transition: all 0.3s;
-        }
-        
-        @media (min-width: 768px) {
-            .music-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-            }
         }
 
         .music-btn:hover {
@@ -710,29 +538,18 @@
 
         .music-alert {
             position: fixed;
-            bottom: 60px;
-            right: 15px;
+            bottom: clamp(70px, 10vw, 80px);
+            right: clamp(10px, 2vw, 20px);
             background-color: var(--dark-color);
             color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 15px);
+            border-radius: clamp(6px, 1vw, 8px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
             z-index: 1001;
             display: none;
-            max-width: 180px;
-            font-size: 12px;
+            max-width: clamp(150px, 20vw, 200px);
+            font-size: clamp(12px, 1.5vw, 14px);
             animation: fadeInOut 3s ease-in-out;
-        }
-        
-        @media (min-width: 768px) {
-            .music-alert {
-                bottom: 80px;
-                right: 20px;
-                padding: 10px 15px;
-                max-width: 200px;
-                font-size: 14px;
-                border-radius: 8px;
-            }
         }
 
         @keyframes fadeInOut {
